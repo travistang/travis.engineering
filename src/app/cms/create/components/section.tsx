@@ -16,11 +16,11 @@ export default function Section({
   return (
     <div
       className={classNames(
-        "rounded-lg shadow-lg p-4 bg-neutral-700",
+        "rounded-lg shadow-lg p-4 bg-neutral-700/20",
         className
       )}
     >
-      <h3 className="text-lg font-bold flex items-center gap-2 ">
+      <h3 className="text-lg font-bold flex items-center gap-2 pb-2">
         {Icon && <Icon />}
         {title}
       </h3>

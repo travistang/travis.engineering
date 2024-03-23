@@ -1,3 +1,3 @@
 export default function CMSMainPage() {
-  return <>WIP</>;
+  return <>CMS Main page</>;
 }

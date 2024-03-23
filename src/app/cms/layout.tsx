@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import { FaPlus } from "react-icons/fa";
 import "../globals.css";
 
@@ -22,6 +23,7 @@ export default function RootLayout({
           "h-screen w-screen flex flex-col items-stretch overflow-hidden"
         )}
       >
+        <Toaster />
         <nav className="flex items-center h-16 md:h-20 py-2 px-4 sticky top-0 shadow-lg bg-neutral z-20">
           <span className="text-lg">
             TOP Blog <b className="text-sm font-bold text-primary">CMS</b>
