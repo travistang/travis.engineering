@@ -1,4 +1,4 @@
-import { del, head, list, put } from "@vercel/blob";
+import { copy, del, head, list, put } from "@vercel/blob";
 
 export type FileMetadata = {
   url: string;
@@ -8,6 +8,22 @@ export type FileMetadata = {
 };
 
 export default class FileStorage {
+  async copyDir(fromDir: string, toDir: string): Promise<boolean> {
+    const filesInDirectory = await this.listDir(fromDir);
+    try {
+      await Promise.all(
+        filesInDirectory.map((blob) => {
+          return copy(blob.url, `${toDir}/${blob.name}`, {
+            access: "public",
+          });
+        })
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async delete(fileName: string): Promise<boolean> {
     try {
       await del(fileName);

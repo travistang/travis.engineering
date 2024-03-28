@@ -24,7 +24,7 @@ export default function RootLayout({
         )}
       >
         <Toaster />
-        <nav className="flex items-center h-16 md:h-20 py-2 px-4 sticky top-0 shadow-lg bg-neutral z-20">
+        <nav className="flex items-center h-16 md:h-20 py-2 px-4 sticky top-0 z-20">
           <span className="text-lg">
             TOP Blog <b className="text-sm font-bold text-primary">CMS</b>
           </span>

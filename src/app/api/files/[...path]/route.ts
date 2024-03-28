@@ -20,14 +20,18 @@ export async function PUT(
   if (!file) {
     return NextResponse.json({ error: "Missing file" }, { status: 400 });
   }
-  const metadata = await new FileStorage().create(requestFilePath, file);
-  if (!metadata) {
-    return NextResponse.json(
-      { error: "Failed to create file" },
-      { status: 500 }
-    );
+  try {
+    const metadata = await new FileStorage().create(requestFilePath, file);
+    if (!metadata) {
+      return NextResponse.json(
+        { error: "Failed to create file" },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json(metadata, { status: 201 });
+  } catch (e) {
+    return NextResponse.json({ error: `${e}` }, { status: 400 });
   }
-  return NextResponse.json(metadata, { status: 201 });
 }
 
 export async function DELETE(request: NextRequest) {
