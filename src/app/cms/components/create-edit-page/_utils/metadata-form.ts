@@ -1,19 +1,18 @@
+import {
+  FIELD_CURRENT_VERSION_FORM_NAME,
+  FIELD_PUBLIC_FORM_NAME,
+  FIELD_READABLE_URL_FORM_NAME,
+  FIELD_SUMMARY_FORM_NAME,
+  FIELD_TAGS_FORM_NAME,
+  FIELD_TITLE_FORM_NAME,
+  TAGS_FORM_UPLOAD_SEPARATOR,
+} from "@/constants";
 import { ArticleDetails } from "@/services/articles";
+import {
+  DEFAULT_METADATA_VALUE,
+  MetadataFormValue,
+} from "@/services/metadata/types";
 import { useState } from "react";
-
-export type MetadataFormValue = {
-  title: string;
-  tags: string[];
-  public: boolean;
-  currentVersion: number;
-};
-
-export const DEFAULT_METADATA_VALUE: MetadataFormValue = {
-  title: "",
-  tags: [],
-  public: false,
-  currentVersion: 1,
-};
 
 const metadataFormFromInitialDetails = (details?: ArticleDetails) => {
   if (!details) return DEFAULT_METADATA_VALUE;
@@ -21,6 +20,8 @@ const metadataFormFromInitialDetails = (details?: ArticleDetails) => {
     title: details.title,
     tags: details.tags,
     public: details.public,
+    summary: details.summary,
+    readableURLName: details.readableURLName,
     currentVersion: details.currentVersion,
   };
 };
@@ -43,11 +44,15 @@ export const isMetadataValid = (metadata: MetadataFormValue) => {
 
 export const formDataFromMetadataForm = (form: MetadataFormValue): FormData => {
   const formData = new FormData();
-  formData.append("public", form.public.toString());
-  formData.append("title", form.title);
-  formData.append("currentVersion", form.currentVersion.toString());
-  form.tags.forEach((tag) => {
-    formData.append("tags", tag);
-  });
+  formData.append(FIELD_PUBLIC_FORM_NAME, form.public.toString());
+  formData.append(FIELD_TITLE_FORM_NAME, form.title);
+  formData.append(FIELD_SUMMARY_FORM_NAME, form.summary);
+  formData.append(FIELD_READABLE_URL_FORM_NAME, form.readableURLName);
+  formData.append(
+    FIELD_CURRENT_VERSION_FORM_NAME,
+    form.currentVersion.toString()
+  );
+  const tagsValue = form.tags.join(TAGS_FORM_UPLOAD_SEPARATOR);
+  formData.append(FIELD_TAGS_FORM_NAME, tagsValue);
   return formData;
 };

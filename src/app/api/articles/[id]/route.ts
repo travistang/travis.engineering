@@ -1,4 +1,5 @@
 import ArticleService from "@/services/articles";
+import { getMetadataUpdatePropsFromFormData } from "@/services/metadata/helper";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -6,18 +7,17 @@ export async function PATCH(
   { params: { id } }: { params: { id: string } }
 ) {
   const form = await request.formData();
-  const article = form.get("article") as unknown as string;
-  const articleName = form.get("title") as unknown as string;
-  if (typeof article !== "string" || typeof articleName !== "string") {
+  const uploadedData = getMetadataUpdatePropsFromFormData(form);
+  const { articles, ...metadata } = uploadedData;
+  if (typeof articles !== "string" || typeof metadata.title !== "string") {
     return NextResponse.json(
       { error: "Missing or malformed data" },
       { status: 400 }
     );
   }
-
   await new ArticleService().updateArticle(id, {
-    title: articleName,
-    content: article,
+    metadata,
+    content: articles,
   });
   return NextResponse.json({ updated: true });
 }
@@ -31,4 +31,12 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   return NextResponse.json(details);
+}
+
+export async function DELETE(
+  _: NextRequest,
+  { params: { id } }: { params: { id: string } }
+) {
+  const deleted = await new ArticleService().deleteArticle(id);
+  return NextResponse.json({ deleted }, { status: deleted ? 200 : 500 });
 }

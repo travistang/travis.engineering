@@ -51,6 +51,7 @@ export default class FileStorage {
     const metadata = await put(path, file, {
       access: "public",
       addRandomSuffix: false,
+      cacheControlMaxAge: 0,
     });
     if (!metadata.url) {
       return null;

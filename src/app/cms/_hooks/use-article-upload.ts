@@ -1,9 +1,8 @@
+import { FIELD_ARTICLE_FORM_NAME } from "@/constants";
+import { MetadataFormValue } from "@/services/metadata/types";
 import toast from "react-hot-toast";
 import useSWRMutation from "swr/mutation";
-import {
-  MetadataFormValue,
-  formDataFromMetadataForm,
-} from "../components/create-edit-page/_utils/metadata-form";
+import { formDataFromMetadataForm } from "../components/create-edit-page/_utils/metadata-form";
 
 type UseArticleUploadResponse = {
   isUploading?: boolean;
@@ -20,7 +19,7 @@ const articleUploader = async (
   }: { arg: { metadata: MetadataFormValue; article: string } }
 ) => {
   const formData = formDataFromMetadataForm(metadata);
-  formData.append("article", article);
+  formData.append(FIELD_ARTICLE_FORM_NAME, article);
   const response = await fetch(url, {
     body: formData,
     method: "PATCH",

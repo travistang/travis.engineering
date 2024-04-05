@@ -1,37 +1,36 @@
 import FileStorage from "./file-storage";
 import MetadataService from "./metadata";
+import { ArticleMetadata, MetadataUpdateProps } from "./metadata/types";
 
-export type ArticlePreview = {
-  id: string;
-  title: string;
-  tags: string[];
-  writtenAt: number;
-  previewContent: string;
-};
-
-export type ArticleDetails = {
-  title: string;
-  writtenAt: number;
-  tags: string[];
+export type ArticleDetails = ArticleMetadata & {
   content: string;
-  currentVersion: number;
-  public: boolean;
 };
 
 export type UpdateArticleProps = {
-  title: string;
-  tags: string[];
+  metadata: MetadataUpdateProps;
   content: string;
 };
+
+export type ArticleSearchPayload = Partial<{
+  searchString: string;
+  writtenAfter: number;
+  writtenBefore: number;
+  tag: string;
+}>;
+
 export default class ArticleService {
   private metaService = new MetadataService();
   private fileStorage = new FileStorage();
 
+  private async getFilesForArticle(articleId: string) {
+    return this.fileStorage.listDir(this.getArticleTextsPath(articleId));
+  }
+
   private async getArticleContent(articleId: string, version = 1) {
-    const files = await this.fileStorage.listDir(`articles/${articleId}`);
+    const files = await this.getFilesForArticle(articleId);
     if (!files.length) return null;
     const url = files[0].url;
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "no-cache" });
     return response.text();
   }
 
@@ -43,19 +42,11 @@ export default class ArticleService {
     return `articles/${articleId}/texts`;
   }
 
-  private getArticleIdFromPath(path: string) {
-    const matchResult = path.match(/^articles\/(.+)\//)?.[0];
-    return matchResult?.[1];
-  }
-
   private async getEmptyArticles(): Promise<string[]> {
-    const articlesList = await this.fileStorage.listDir("articles");
-    const emptyV1Articles = articlesList.filter(
-      (meta) => meta.name.endsWith("v1.txt") && meta.size === 0
-    );
-    return emptyV1Articles
-      .map((meta) => this.getArticleIdFromPath(meta.name)!)
-      .filter(Boolean);
+    const allArticles = await this.metaService.getAllArticles();
+    return allArticles
+      .filter((meta) => !meta.title)
+      .map((meta) => meta._id.toHexString());
   }
 
   private async saveTextForArticle(
@@ -66,7 +57,7 @@ export default class ArticleService {
     const file = new File([content], `v${version}.txt`, {
       type: "text/plain",
     });
-    await this.fileStorage.create(this.getArticleTextsPath(articleId), file);
+    return this.fileStorage.create(this.getArticleTextsPath(articleId), file);
   }
 
   async createDraft(): Promise<string> {
@@ -83,12 +74,10 @@ export default class ArticleService {
   }
 
   async updateArticle(id: string, props: Partial<UpdateArticleProps>) {
-    const { title, tags, content } = props;
-    if (title || tags) {
-      await this.metaService.update(id, {
-        title,
-        tags,
-      });
+    const { metadata, content } = props;
+
+    if (metadata) {
+      await this.metaService.update(id, metadata);
     }
 
     if (content) {
@@ -113,15 +102,26 @@ export default class ArticleService {
     return this.fileStorage.delete(searchResult[0].url);
   }
 
+  async getArticleDetailsByReadableUrlName(
+    name: string
+  ): Promise<ArticleDetails | null> {
+    const meta = await this.metaService.getArticleByReadableURLName(name);
+    if (!meta) return null;
+    const content = await this.getArticleContent(meta._id.toHexString());
+    if (content === null) return null;
+    return {
+      ...meta,
+      content,
+    };
+  }
+
   async getArticleDetails(id: string): Promise<ArticleDetails | null> {
     const meta = await this.metaService.get(id);
     if (!meta) return null;
     const content = await this.getArticleContent(id);
     if (content === null) return null;
-
     return {
       ...meta,
-      writtenAt: meta.modifiedAt ?? meta.createdAt,
       content,
     };
   }
@@ -130,5 +130,21 @@ export default class ArticleService {
     return (await this.metaService.getRegisteredTags()).filter((tag) =>
       tag.toLowerCase().includes(searchString.toLowerCase())
     );
+  }
+
+  async deleteArticle(id: string): Promise<boolean> {
+    const meta = await this.metaService.get(id);
+    if (!meta) return false;
+    const metaDeleted = await this.metaService.delete(id);
+    if (!metaDeleted) return false;
+    const files = await this.getFilesForArticle(id);
+    await Promise.all(files.map((file) => this.fileStorage.delete(file.url)));
+    return true;
+  }
+
+  async searchArticles(
+    searchPayload: ArticleSearchPayload
+  ): Promise<ArticleMetadata[]> {
+    return this.metaService.search(searchPayload);
   }
 }

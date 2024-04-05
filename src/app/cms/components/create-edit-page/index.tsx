@@ -5,11 +5,12 @@ import MDEditor from "@uiw/react-md-editor";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { FaCheckCircle, FaPhotoVideo, FaTrash } from "react-icons/fa";
+import { FaPhotoVideo, FaTrash } from "react-icons/fa";
 import useArticleUpload from "../../_hooks/use-article-upload";
 import useMediaCrud from "../../_hooks/use-media-crud";
 import MediaUpload from "../../create/components/media-upload";
 import Section from "../../create/components/section";
+import PublishBlogButton from "../cms-nav-buttons/publish-blog-button";
 import { useMetadataForm } from "./_utils/metadata-form";
 import MetadataForm from "./metadata-form";
 
@@ -54,16 +55,10 @@ export default function CreateEditPage({
     <div className="flex flex-col item-stretch py-4 px-2 gap-4">
       <div className="py-4 flex items-center justify-between pr-4 pl-2">
         <h1 className="text-4xl">{pageTitle}</h1>
-        <button onClick={confirmUploadArticle} className="btn btn-success">
-          {isUploadingArticle ? (
-            <span className="loading loading-spinner" />
-          ) : (
-            <>
-              <FaCheckCircle />
-              Publish
-            </>
-          )}
-        </button>
+        <PublishBlogButton
+          onClick={confirmUploadArticle}
+          isLoading={isUploadingArticle}
+        />
       </div>
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-5">
         <MetadataForm metadata={metadata} onChange={updateMetadataForm} />
@@ -87,7 +82,7 @@ export default function CreateEditPage({
                 <div className="absolute bottom-0 left-0 right-0 h-8 bg-neutral-700/75 flex items-center justify-between text-xs italic p-2 whitespace-nowrap overflow-ellipsis overflow-hidden">
                   {meta.name}
                   <button
-                    onClick={() => deleteMedia(meta.url)}
+                    onClick={() => deleteMedia(meta.name)}
                     className="btn btn-ghost btn-circle btn-error btn-xs"
                   >
                     <FaTrash />

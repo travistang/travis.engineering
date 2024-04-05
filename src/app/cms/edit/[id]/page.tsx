@@ -1,5 +1,4 @@
 import ArticleService from "@/services/articles";
-import createClient from "@/services/mongo";
 import { redirect } from "next/navigation";
 import CreateEditPage from "../../components/create-edit-page";
 
@@ -8,7 +7,6 @@ export default async function CMSEditPage({
 }: {
   params: { id: string };
 }) {
-  await createClient();
   const articleDetails = await new ArticleService().getArticleDetails(
     params.id
   );
