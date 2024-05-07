@@ -15,6 +15,7 @@ export const metadata = {
   title: "travis.engineering",
   description:
     "travis.engineering is the portfolio and personal blog created by Travis Tang, a full stack developer from Hong Kong specialized in React, TypeScript, TailwindCSS and Next.js",
+  image: "/images/icon.svg",
 };
 export default function RootLayout({
   children,
@@ -26,6 +27,8 @@ export default function RootLayout({
       <Head>
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
+        <meta name="og:image" content={metadata.image} />
+        <meta name="twitter:image" content={metadata.image} />
       </Head>
       <body
         className={classNames(
