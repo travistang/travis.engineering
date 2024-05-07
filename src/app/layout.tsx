@@ -15,7 +15,7 @@ export const metadata = {
   title: "travis.engineering",
   description:
     "travis.engineering is the portfolio and personal blog created by Travis Tang, a full stack developer from Hong Kong specialized in React, TypeScript, TailwindCSS and Next.js",
-  image: "/images/icon.svg",
+  image: "/images/icon.png",
 };
 export default function RootLayout({
   children,
