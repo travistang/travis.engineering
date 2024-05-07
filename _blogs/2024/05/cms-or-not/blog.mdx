@@ -1,0 +1,88 @@
+When I first built this site (travis.engineering) I wanted it to be my personal page, my portfolio, as well as my personal blog.
+In hindsight, this could have been completed much earlier if I didn't try to implement a content management system (CMS) for it.
+
+### The concept
+
+I never had a blog before, I wanted to have one, and I'm excited about this idea.
+As I have been building my other projects with Next.js and learnt about [Vercel Blob](https://vercel.com/storage/blob) at that time, I thought it would be a good idea to create a custom CMS out of them.
+Because you know, although I am very well aware that there are lots of existing and mature solutions like Wordpress for that kind of purpose,
+I always wanted to build my own so to learn something new and have more hands-on experience - given the project itself is not very time-consuming.
+
+### The initial plan
+
+The initial plan was that Next.js would be used for frontend and backend, and Vercel Blob would be used for storing the markdown files as well as assets for the blogs.
+Every time someone visits a blog page a serverless function like this one would be invoked:
+
+```typescript
+// src/app/blogs/[...slug]/page.tsx
+export default async function BlogPage() {
+  const { slug } = useRouter();
+  const blog = await getBlog(slug);
+
+  if (!blog) {
+    redirect("/not-found");
+  }
+
+  return <Markdown blog={blog} />;
+}
+```
+
+The idea is simple: The function looks for corresponding markdown file in Vercel Blob by URL, take it and render accordingly.
+Since it is so straight forward and shouldn't take much time to complete, I instead first implemented the CMS page,
+which is an interface consisting of a markdown editor,
+a bunch of inputs to adjust the metadata (blog title, date, tags, category etc.) and a panel for adding / deleting assets for the blog.
+It progressed quite well after a month, and I was able to create blog posts and save it to Vercel Blob using them.
+
+### The problem
+
+So why did I stop there? Well as the CMS and the blog rendering page started to materialize I have eventually come to some blockers that make me rethink the whole idea:
+
+#### 1. The CMS page needs authentication
+
+Since it is my own blog and I would like to be the only one who can create and edit the blog posts,
+I need to implement an authentication system to safeguard the page.
+However at this point it start to appear to me that the CMS part is a bit of an overkill in this situation -
+do I really need to go through all of these, just to be able to write posts whenever and wherever I want? Is that even one of the features I initially asked for?
+
+#### 2. All of these requires maintenance
+
+Because the CMS system is custom-built, it needs to be maintained and updated regularly - and it can only be done by myself:
+Packages need to be updated, security vulnerabilities need to be patched, and new features need to be added.
+All of these will eventually hinder me from properly update the content, leading to either a lost of interest in publishing new content,
+or even rewriting the whole project.
+
+#### 3. It could eventually be costly
+
+Querying Vercel Blob for every blog post is not a good idea, especially when the blog grows and the number of visitors increases.
+Since the blog content is largely static, it also doesn't make sense to create a new serverless function for every blog post as every second of computation costs money.
+
+#### 4. It is hard to extend
+
+Although it is not a straight requirement, I have already anticipated that at some point I would like to have some custom components shown in future blog articles to increase engagement and content diversity.
+The markdown editor library I used, however, doesn't support custom components, and it would be a lot of work to implement it myself, so at some point it will become a blocker.
+
+### Current solution
+
+In the end, instead of using a CMS, I simply put all the markdowns alongside with the project's code base and the assets in the separate `public/` folder.
+This turns out to be the solution of Vercel's [example project](https://github.com/vercel/next.js/tree/canary/examples/blog-starter) for creating a static blog as well.
+This approach also me to use custom components by cooperating with [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote),
+and with that I can refer to any React components in the markdown files, with the first one being the `next/image` Image component.
+
+<br />
+Doing this also allows the blog pages to be statically generated - now the blog pages
+are pre-built at build time and served as static files, saving some computation time
+from the serverless function and reducing the cost for hosting it.
+
+<br />
+There are, of course, also downsite for this: The whole page has to be redeployed
+whenever I make changes to any blog pages. The assets have to be put in the public
+folder instead of alongside with the markdown files.
+
+<br />
+But hey, at least I have a blog now!
+
+### Takeaway
+
+While it is exciting to roll out our own solutions, sometimes it's better to first look at the pros and cons of doing so.
+Always look at the original requirement and don't waste time and effort in some features that are non-essential to the product,
+as they could potentially become a rabbit hole you dive into and lose track of the initial goal.

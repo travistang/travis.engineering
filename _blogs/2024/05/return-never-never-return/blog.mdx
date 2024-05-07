@@ -1,0 +1,149 @@
+## Background
+
+The logic of the individual blog post on this site (written in Next.js 14) looks very much like this:
+
+```typescript
+// src/app/blogs/[...slug]/page.tsx
+
+export default async function ArticleViewPage({ params: { slug } }: Props) {
+  const articleContent = await getArticle(slug);
+  if (!articleContent) {
+    redirect("/not-found");
+  }
+  // ...
+}
+```
+
+Of course `getArticle` would either return everything it needs to render an article (lets say it has type `ArticleDetails`), or `null` if the slug doesn't really match any existing URL. That is, the function has signature
+
+```typescript
+function getArticle(slug: string[]): Promise<ArticleDetails | null>;
+```
+
+In case a `null` is received, the app will redirect the user to `/not-found` using the `redirect` function provided by `next/navigation` package.
+
+## Observation
+
+I decided to add a `return` statement right after the `redirect` function call to make sure the function doesn't continue executing after the redirect.
+Interestingly, TypeScript informed me that the `return` statement is unreachable:
+
+```typescript
+// ...
+if (!articleContent) {
+  redirect("/not-found");
+  return; // <- Unreachable code detected
+}
+// ...
+```
+
+Also Typescript already treated `articleContent` as non-nullable in the code after the `if` block, even though it should have type `ArticleDetails | null`, because using `articleContent`'s property did not trigger TypeScript's _'articleContent' is possibly 'null'_ warning:
+
+```tsx
+// using `articleContent.coverImageUrl` is fine!
+<Image src={articleContent.coverImageUrl} />
+```
+
+## Investigation
+
+Out of curiosity, I swapped `redirect` with a dummy function that returns `void` to see the effect:
+
+```tsx
+// ...
+if (!articleContent) {
+  // function dummy(s: string): void
+  dummy("/not-found");
+}
+
+// codes below will be executed...
+<Image fill alt="cover photo" src={articleContent.coverImageUrl} />;
+//                                 _______________ <- 'articleContent' is possibly 'null'
+```
+
+All those TypeScript errors appear again. This leads me to believe that these TypeScript magics have to do with the type of `redirect`. Which is
+
+```typescript
+function redirect(url: string, type?: RedirectType): never;
+```
+
+To be honest, in spite of the fact that I have been using TypeScript for work for quite a few years now, I have yet to see a function that returns `never`. Because of its rareness I decided to adjust the types of `dummy` function to see if this return type is the reason of all these magics:
+
+```tsx
+// ...
+if (!articleContent) {
+  // function dummy(s: string): never
+  dummy("/not-found");
+}
+
+// Now there is no error!
+<Image fill alt="cover photo" src={articleContent.coverImageUrl} />;
+```
+
+And all the errors are gone, confirming the hypothesis.
+
+Additionally when I was creating the `dummy` function I came across an error:
+
+```typescript
+// Error: A function returning 'never' cannot have a reachable end point.
+function dummy(s: string): never {
+  console.log("dummy");
+}
+```
+
+Which directly suggests the purpose of denoting a function to return `never` is to indicate the function will _never return_. This explains why TypeScript determined that `articleContent` cannot be null if the code after the `if` block is executed and that a `return` after the `redirect` function call is unreachable.
+
+The scenarios I could think of, in which _a function could never return_, are:
+
+<br />
+
+- **A function that throws no matter which control flow it goes through**.
+  For example:
+
+```typescript
+// function dummy(): never
+function dummy() {
+  throw "dummy";
+}
+```
+
+- **A function that recursively calls itself regardless of control flow**:
+
+```typescript
+// function dummy(s: string): never
+function dummy(s: string) {
+  const stringAndDummy = s + "dummy";
+  console.log(stringAndDummy);
+  return dummy(stringAndDummy);
+}
+```
+
+- A function with **loops that can never be escaped**:
+
+```typescript
+// function dummy(): never
+function dummy() {
+  while (true) {
+    console.log("dummy!");
+  }
+}
+```
+
+_Trivia_: It seems like TypeScript determines that a `while` loop cannot be escaped **only** if the condition is `true`:
+
+```typescript
+function dummy(): never {
+  while (true) {} // OK: TypeScript determines this loop is unescapable and therefore `dummy` can have return type "never"
+  while (1) {} // Error: TypeScript determines that this loop can be escaped so `dummy` cannot have return type "never".
+  while (!false) {} // Error: TypeScript also determines this can be escaped.
+
+  const a = true as true; // const a: true
+  while (a) {} // Error: not even this works.
+}
+```
+
+<br />
+
+On the other hand, a function that returns `void` means that it _returns no values_ - which it is not the same as saying it _never returns_ (return type `never`) because the code
+after that function can still be executed.
+
+<br />
+Therefore in TypeScript, **if a function never returns, it "returns" `never`**.

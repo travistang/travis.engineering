@@ -1,0 +1,7 @@
+{
+  "title": "Never returns? Returns never!",
+  "createdAt": "2024-05-01",
+  "tags": ["TypeScript"],
+  "category": "development",
+  "summary": "There's a way in TypeScript to indicate a function that can never return - and it's not \"void\"!"
+}

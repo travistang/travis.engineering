@@ -1,0 +1,32 @@
+.article-markdown blockquote {
+  @apply min-h-4 text-center italic text-xl;
+}
+
+code:not([class]) {
+  @apply rounded-sm bg-primary-lighter/50 dark:bg-primary-light/50 text-slate dark:text-white px-2;
+}
+
+code > span {
+  background: unset;
+  color: unset;
+}
+
+h1 {
+  line-height: initial;
+}
+
+h2 {
+  @apply py-4 text-xl md:text-2xl font-bold;
+}
+
+h3 {
+  @apply py-4 text-lg md:text-xl font-bold;
+}
+
+h4 {
+  @apply py-4 md:text-lg font-bold;
+}
+
+.cover-photo-wrapper > img {
+  position: unset !important;
+}

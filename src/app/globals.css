@@ -2,22 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+div,
+span {
+  @apply text-slate bg-white dark:text-white dark:bg-slate;
+}
+
+.icon-changable-path {
+  @apply fill-slate dark:fill-white;
+}
+
+#site-icon > icon-r-stroke > {
+  @apply fill-slate dark:fill-white;
+}
+
+ul {
+  @apply list-disc list-inside;
+}
+p {
+  @apply text-justify;
+}
+
 h1 {
-  @apply text-5xl lg:text-5xl font-bold;
+  @apply text-3xl md:text-5xl font-bold;
+}
+
+a {
+  @apply text-primary md:hover:underline hover:text-primary-dark dark:hover:text-primary-light;
 }
 
 h2 {
-  @apply text-3xl lg:text-5xl font-bold;
+  @apply text-2xl md:text-4xl font-bold;
 }
 
 h3 {
-  @apply text-xl lg:text-3xl;
+  @apply text-xl md:text-3xl;
 }
 
 h4 {
-  @apply text-lg lg:text-xl;
+  @apply text-lg md:text-xl font-bold;
 }
 
-input::placeholder {
-  @apply text-neutral;
+a {
+  @apply hover:no-underline;
+}
+
+nav a {
+  @apply text-slate dark:text-white  px-4 hover:text-primary dark:hover:text-primary-light;
 }
