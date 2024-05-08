@@ -3,7 +3,7 @@ import { Metadata } from "next";
 const rawMetadata = {
   url: "https://travis.engineering",
   title: "travis.engineering | Personal Blog by Travis Tang",
-  icon: "https://travis.engineering/icon.png",
+  icon: "https://www.travis.engineering/icon.png",
   name: "travis.engineering",
   description:
     "travis.engineering is the portfolio and personal blog created by Travis Tang, a full stack developer from Hong Kong specialized in React, TypeScript, TailwindCSS and Next.js",
