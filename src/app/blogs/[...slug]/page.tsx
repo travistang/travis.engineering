@@ -41,6 +41,12 @@ export async function generateMetadata({
       url: "https://travis.engineering",
       images: details.coverImageUrl,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: details.title,
+      description: details.summary,
+      images: details.coverImageUrl,
+    },
   };
 }
 
