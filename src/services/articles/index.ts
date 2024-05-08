@@ -11,7 +11,7 @@ export type ArticleMetadata = {
   currentVersion: number;
   createdAt: number;
   modifiedAt: number;
-  public: boolean;
+  hidden?: boolean;
   summary: string;
 };
 
@@ -43,7 +43,9 @@ export const listArticles = async (): Promise<ArticleDetails[]> => {
   )
     .then(
       (articles) =>
-        articles.filter((article) => article !== null) as ArticleDetails[]
+        articles.filter(
+          (article) => article !== null && !article.hidden
+        ) as ArticleDetails[]
     )
     .then((articles) =>
       articles.sort(

@@ -38,7 +38,7 @@ export default function PublicArticleHeader() {
             <FaBars />
           </button>
         </div>
-        <HeaderMenu opened={menuOpened} />
+        <HeaderMenu opened={menuOpened} onClick={() => setMenuOpened(false)} />
       </header>
     </>
   );

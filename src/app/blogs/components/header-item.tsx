@@ -6,10 +6,18 @@ type Props = {
   className?: string;
   text: string;
   tabIndex?: number;
+  onClick?: () => void;
 };
-export const HeaderItem = ({ tabIndex, className, href, text }: Props) => {
+export const HeaderItem = ({
+  onClick,
+  tabIndex,
+  className,
+  href,
+  text,
+}: Props) => {
   return (
     <Link
+      onClick={onClick}
       tabIndex={tabIndex}
       href={href}
       className={classNames(

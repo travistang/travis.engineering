@@ -43,7 +43,7 @@ export default async function TopBlogDetailPage() {
 
       <h4>Techniques</h4>
       <p>
-        The project makes use of Next.js&apos; ability to detect and render
+        The project makes use of Next.js&apos;s ability to detect and render
         pages during the build time, known as{" "}
         <a
           href="https://nextjs.org/docs/pages/building-your-application/rendering/static-site-generation"

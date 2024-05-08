@@ -6,10 +6,20 @@ type Props = {
   alt: string;
   className?: string;
   children?: React.ReactNode;
+  onClick?: () => void;
 };
-export const ImagePreview = ({ src, alt, className, children }: Props) => {
+export const ImagePreview = ({
+  onClick,
+  src,
+  alt,
+  className,
+  children,
+}: Props) => {
   return (
-    <div className={classNames("rounded-lg aspect-square", className)}>
+    <div
+      onClick={onClick}
+      className={classNames("rounded-lg aspect-square", className)}
+    >
       {children}
       <Image src={src} alt={alt} objectFit="contain" layout="fill" />
     </div>

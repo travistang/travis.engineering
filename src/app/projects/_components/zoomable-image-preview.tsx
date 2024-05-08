@@ -49,6 +49,7 @@ export const ZoomableImagePreview = ({ url, alt }: Props) => {
     <ImagePreview
       src={url}
       alt={alt}
+      onClick={onPreviewClick}
       className="relative col-span-4 h-36 md:h-48 flex-shrink-0 group overflow-hidden bg-slate/20 dark:bg-slate-light/20"
     >
       {!opened && (

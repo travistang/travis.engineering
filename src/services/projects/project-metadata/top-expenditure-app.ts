@@ -20,7 +20,7 @@ export const TopExpenditureAppProject: Project = {
   startDate: new Date("2023-11-07").getTime(),
   links: {
     sourceCode: "https://github.com/travistang/top-expenditure-app",
-    product: "",
+    product: "https://travistang.github.io/top-expenditure-app/",
   },
   screenshots: [
     {

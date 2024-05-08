@@ -5,8 +5,9 @@ import { HeaderItems } from "./header-items";
 
 type Props = {
   opened?: boolean;
+  onClick?: () => void;
 };
-export default function HeaderMenu({ opened }: Props) {
+export default function HeaderMenu({ onClick, opened }: Props) {
   return (
     <div
       id={SELECTOR_PUBLIC_HEADER_MENU}
@@ -17,7 +18,7 @@ export default function HeaderMenu({ opened }: Props) {
     >
       <nav className="flex flex-col items-stretch justify-start space-y-4 p-4">
         <ul className="flex flex-col space-y-4">
-          <HeaderItems nonTabbable={!opened} />
+          <HeaderItems onClick={onClick} nonTabbable={!opened} />
         </ul>
         <div className="flex items-center justify-end">
           <ThemeToggle />
