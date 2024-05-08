@@ -1,5 +1,4 @@
 import ThemeToggle from "@/app/components/theme-toggle";
-import { SELECTOR_PUBLIC_HEADER_MENU } from "@/constants/selectors";
 import classNames from "classnames";
 import { HeaderItems } from "./header-items";
 
@@ -10,7 +9,6 @@ type Props = {
 export default function HeaderMenu({ onClick, opened }: Props) {
   return (
     <div
-      id={SELECTOR_PUBLIC_HEADER_MENU}
       className={classNames(
         `absolute top-full left-0 w-full bg-white dark:bg-slate transition-transform duration-300 md:hidden -z-20 shadow-lg`,
         opened ? "-translate-y-0" : "-translate-y-[200%]"

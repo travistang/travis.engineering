@@ -2,7 +2,6 @@
 
 import Brand from "@/app/components/brand";
 import ThemeToggle from "@/app/components/theme-toggle";
-import { SELECTOR_PUBLIC_HEADER_TOGGLE } from "@/constants/selectors";
 import classNames from "classnames";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
@@ -28,7 +27,7 @@ export default function PublicArticleHeader() {
             </ul>
           </nav>
         </div>
-        <div id={SELECTOR_PUBLIC_HEADER_TOGGLE} className="md:hidden">
+        <div className="md:hidden">
           <button
             role="menuitem"
             aria-label="open navigation menu"
