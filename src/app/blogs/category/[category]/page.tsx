@@ -11,10 +11,11 @@ export async function generateStaticParams() {
 }
 
 export default async function CategoryPage({
-  params: { category },
+  params: { category: urlCategory },
 }: {
   params: { category: string };
 }) {
+  const category = decodeURIComponent(urlCategory);
   const articles = await getArticlesByCategory(category);
   return (
     <BlogLists blogs={articles}>

@@ -8,11 +8,13 @@ export async function generateMetadata() {
 
 export default async function NotFound() {
   return (
-    <div className="flex flex-col flex-1 justify-center items-center gap-4">
+    <div className="flex flex-col flex-1 justify-center items-center gap-4 p-4 ">
       <h1>Oops!</h1>
-      <h4>I am sorry, but whatever you are looking for is not here.</h4>
+      <h4 className="text-center font-normal">
+        I am sorry, but whatever you are looking for is not here.
+      </h4>
       <Link href="/">
-        <button className="bg-primary h-16 rounded-lg text-white px-4">
+        <button className="bg-primary h-12 md:h-16 rounded-lg text-white px-4">
           Back to main page
         </button>
       </Link>

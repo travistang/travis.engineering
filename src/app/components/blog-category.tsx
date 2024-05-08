@@ -16,7 +16,7 @@ const CATEGORY_COLORS = {
 
 export const BlogCategory = ({ className, category }: Props) => {
   return (
-    <Link href={`${ROUTE_BLOGS_BY_CATEGORY}/${category}`}>
+    <Link href={`${ROUTE_BLOGS_BY_CATEGORY}/${encodeURIComponent(category)}`}>
       <span
         tabIndex={-1}
         className={classNames(

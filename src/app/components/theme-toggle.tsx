@@ -12,6 +12,7 @@ const persistTheme = (theme: Theme) => {
 };
 
 const computeDefaultTheme = (): Theme => {
+  if (typeof window === "undefined") return "light";
   const savedTheme = localStorage.getItem(LS_THEME_KEY);
   if (savedTheme) return savedTheme as Theme;
   const defaultTheme = window.matchMedia("(prefers-color-scheme: dark)").matches

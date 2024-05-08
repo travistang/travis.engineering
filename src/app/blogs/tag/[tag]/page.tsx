@@ -7,10 +7,11 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogsByTagPage({
-  params: { tag },
+  params: { tag: urlTag },
 }: {
   params: { tag: string };
 }) {
+  const tag = decodeURIComponent(urlTag);
   const blogs = await getArticlesByTag(tag);
   return (
     <BlogLists blogs={blogs}>
