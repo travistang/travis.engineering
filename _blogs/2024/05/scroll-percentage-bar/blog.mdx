@@ -1,0 +1,254 @@
+## What reading progress bar?
+
+When I mention "reading progress bar" in the title, I mean the little bar you see at the top of the screen that grows horizontally as you scroll through a blog post to indicate how far you have read the post. I have come across a few blogs that have this feature so I am excited about implementing one on my own blog as a nice little challenge. So let's get started!
+
+## The plan
+
+Let's first break down the task of "building a reading progress bar" into a few smaller tasks and solve them one by one:
+
+1. To build a progress bar, we first need to know the "progress". Here it means how far the user has scrolled through the blog post.
+
+2. Creating the progress bar: Then we create a progress bar and make sure it works by feeding it a dummy progress, effectively separating this small task from the previous one.
+
+3. Combining the first two together: By making the progress bar react to the actual progress the user has.
+
+## How far did we scroll?
+
+Let's try to approach the first problem. Intuitively the progress bar should have no length when the user just started reading the article and at full length (page width) when the user "finished scrolling" (hopefully that also means finished reading) the article. For this I recalled there are a few attributes in `document.documentElement` that has something to do with `scroll`, `height` and `top` and `client` which could be relevant to this task we have at hand. They are:
+
+- `scrollHeight`
+- `scrollTop`
+- `clientTop`
+- `clientHeight`
+
+<br />
+
+I know it's very hard to figure out what they actually are by simply looking
+at their names and at some point I'm convinced that their names are made by picking
+any 2 out of those 4 words and piece them together. While for sure there are documentations
+like [MDN](https://developer.mozilla.org/en-US/) which explains each of them in
+depth, I sometimes find it even harder to comprehend those explanations than finding
+out their meaning empirically:
+
+<br />
+
+First lets pick a page that can be scrolled for experimenting. For this I choose one of the [blog posts I wrote](https://www.travis.engineering/blogs/2024/05/return-never-never-return). Then we simply log the value of these 4 variables at different scrolling point to observe their behaviour.
+
+<br />
+
+At the **top** of the page, their values are:
+
+- `scrollHeight`: 4756,
+- `scrollTop`: 0,
+- `clientTop`: 0,
+- `clientHeight`: 867
+
+At the (somewhat) **middle** of the page, their values are:
+
+- `scrollHeight`: 4756,
+- `scrollTop`: 1843,
+- `clientTop`: 0,
+- `clientHeight`: 867
+
+At the **bottom** of the page (when you scroll down till you can't anymore), the values are:
+
+- `scrollHeight`: 4756,
+- `scrollTop`: 3889,
+- `clientTop`: 0,
+- `clientHeight`: 867
+
+From what I see here:
+
+- `clientTop` is always 0 no matter where you are on the page. It's therefore not relevant to our task.
+- `scrollHeight` stays the same with a very huge number, so probably it refers to the **total height** of the blog post.
+- `scrollTop` gets bigger as I scroll down, so probably it has something to do with the **progress**.
+- Although `scrollTop` isn't the same as `scrollHeight` when the bottom is reached, adding `clientHeight` to it equals exactly to `scrollHeight`: 3889 (`scrollTop`) + 867 (`clientHeight`) = 4756 (`scrollHeight`). Therefore I suspect that `scrollTop` means the _top_ of the viewport and `clientHeight` is actually the height of the viewport. So now on my mind:
+
+![Assumption that scrollTop is the top of browser, clientHeight is the height of the browser and scrollHeight is the height of the entire document](/blogs/2024/05/scroll-percentage-bar/illustration-1.png)
+
+But maybe it's just coincidence, that's keep the scrolling position of the document but reduce the height of the browser and see how the values changes:
+
+- `scrollHeight`: 4756 -> 4756,
+- `scrollTop`: 3293 -> 3293,
+- `clientHeight`: 867 -> 621
+
+Only `clientHeight`'s value being reduced when the browser's height is reduced, which confirms the assumption.
+
+<br />
+
+As a result, we know that at the top of the page, `scrollTop` should be 0; When we are at the bottom of the page, `scrollTop` should be `scrollHeight - clientHeight`:
+
+![When the screen is at the bottom of the page, scrollTop = scrollHeight - clientHeight](/blogs/2024/05/scroll-percentage-bar/illustration-2.png)
+
+As a result, the "percentage" of paragraph read can be defined as:
+
+<MathEquation
+  block
+  equation={"\\frac{scrollTop}{scrollHeight - clientHeight} * 100\\%"}
+/>
+
+## Creating the Progress bar
+
+After figuring out how to calculate the progress of the reading, we now can turn to create the progress bar component.
+
+<br />
+
+I imagine the progress bar will stick right below the header and it will be "hidden" by the dropdown menu when the menu is opened so the new component should be placed within the header component:
+
+<br />
+
+<CodeWithFileName
+  showLineNumbers
+  addedLines={[10]}
+  language="tsx"
+  fileName="@/app/blogs/components/header.tsx"
+>
+  {`export const Header = () => {
+  const [menuOpened, setMenuOpened] = useState(false);
+  return (
+    <>
+      <header
+        className={classNames(
+          "sticky top-0 flex justify-between items-center p-4 bg-white dark:bg-slate z-50"
+        )}
+      >
+        <ReadingProgressBar />
+        <Brand />
+        <div className="hidden md:flex items-center gap-8">
+    {/* ... */}
+  );
+}
+`}
+</CodeWithFileName>
+
+<br />
+
+Then unleash our creativity and fill in the `<ReadingProgressBar />`, assuming the progress is 50% so we see how the bar would look like in the filled part as well as the remaining part:
+
+<br />
+<CodeWithFileName
+  language="tsx"
+  fileName="@/app/blogs/[...slug]/components/reading-progress-bar.tsx"
+>
+  {`export const ReadingProgressBar = () => {
+    <div className="absolute top-full left-0 h-1 w-1/2 bg-primary" />
+  }`}
+</CodeWithFileName>
+
+<br />
+
+Now add an event listener to listen to scroll event. Calculate the "progress" and `console.log` it whenever a scroll happens:
+
+<br />
+
+<CodeWithFileName
+  showLineNumbers
+  addedLines={[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+  language="tsx"
+  fileName="@/app/blogs/[...slug]/components/reading-progress-bar.tsx"
+>
+  {`export const ReadingProgressBar = () => {
+    useEffect(() => {
+      const scrollListener = () => {
+        const pageHeight = document.documentElement.scrollHeight;
+        const viewportHeight = document.documentElement.clientHeight;
+        const currentScrollPosition = document.documentElement.scrollTop;
+        const ratio = currentScrollPosition / (pageHeight - viewportHeight);
+        console.log({ ratio });
+      };
+      document.addEventListener("scroll", scrollListener);
+      return () => document.removeEventListener("scroll", scrollListener);
+    }, []);
+    <div className="absolute top-full left-0 h-1 w-1/2 bg-primary" />
+  }
+`}
+</CodeWithFileName>
+
+## Make the bar react to the changing progress
+
+Once we know it's working when the `ratio` logged makes sense (which should be between 0 and 1, and increases when the page is scrolled towards the bottom), we change the width of the progress bar according to the ratio:
+
+<br />
+
+<CodeWithFileName
+  showLineNumbers
+  addedLines={[2, 5, 10, 15]}
+  language="tsx"
+  fileName="@/app/blogs/[...slug]/components/reading-progress-bar.tsx"
+>
+  {`export const ReadingProgressBar = () => {
+    const progressBar = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+      const scrollListener = () => {
+        if(!progressBar.current) return;
+        const pageHeight = document.documentElement.scrollHeight;
+        const viewportHeight = document.documentElement.clientHeight;
+        const currentScrollPosition = document.documentElement.scrollTop;
+        const ratio = currentScrollPosition / (pageHeight - viewportHeight);
+        progressBar.current.style.width = \`\${ratio * 100}%\`;
+      };
+      document.addEventListener("scroll", scrollListener);
+      return () => document.removeEventListener("scroll", scrollListener);
+    }, []);
+    <div ref={progressBar} className="absolute top-full left-0 h-1 w-1/2 bg-primary" />
+  }
+`}
+</CodeWithFileName>
+
+<br />
+
+So far so good, but I want like to add a little bit of (almost transparent) tint to the entire progress bar so to give the readers an idea of where the progress bar is going to go. Additionally it when the users haven't started reading (i.e. progress is almost 0) yet the entire proress bar and the tint should be invisible. Only when the users actually started reading will the tint fades in and the progress bar starts to move:
+
+<br />
+To do this, let's wrap the "moveable" progress bar into a container, which always
+spans across the width of the screen but remains invisible when the progress (ratio)
+is almost 0. Once the ratio starts to be significant (say 0.01) will the tint appears:
+
+<br />
+
+<CodeWithFileName
+  showLineNumbers
+  addedLines={[3, 6, 11, 12, 20, 21, 22, 23, 24, 25, 31]}
+  language="tsx"
+  fileName="@/app/blogs/[...slug]/components/reading-progress-bar.tsx"
+>
+  {`export const ReadingProgressBar = () => {
+  const progressBar = useRef<HTMLDivElement>(null);
+  const progressBarContainer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const scrollListener = () => {
+      if (!progressBar.current || !progressBarContainer.current) return;
+      const pageHeight = document.documentElement.scrollHeight;
+      const viewportHeight = document.documentElement.clientHeight;
+      const currentScrollPosition = document.documentElement.scrollTop;
+      const ratio = currentScrollPosition / (pageHeight - viewportHeight);
+      progressBarContainer.current.style.backgroundColor =
+        ratio < 0.01 ? "transparent" : \`\${colors.slate[500]}30\`;
+      progressBar.current.style.width = \`\${ratio * 100}%\`;
+    };
+    document.addEventListener("scroll", scrollListener);
+    return () => document.removeEventListener("scroll", scrollListener);
+  }, [inBlogPost]);
+
+return (
+
+<div
+role="presentation"
+ref={progressBarContainer}
+className={classNames(
+"absolute top-full left-0 right-0 h-1 md:h-2 -z-30 transition-colors duration-300"
+)}>
+<div
+        role="progressbar"
+        ref={progressBar}
+        className="z-10 absolute top-0 left-0 h-full bg-primary "
+      />
+</div>
+);
+}
+`}
+</CodeWithFileName>
+
+## Conclusion
+
+At this stage the progress bar should be reacting to the reading progress of the user. If you want to have a demo, just look at the bottom of the header bar of the screen :)

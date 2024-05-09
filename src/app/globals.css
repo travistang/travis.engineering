@@ -49,3 +49,11 @@ a {
 nav a {
   @apply text-slate dark:text-white  px-4 hover:text-primary dark:hover:text-primary-light;
 }
+
+.reading-progress {
+  width: calc(100% * var(--page-completion-ratio));
+}
+
+code span {
+  background-color: transparent;
+}

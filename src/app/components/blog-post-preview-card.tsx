@@ -22,13 +22,13 @@ export const BlogPostPreviewCard = ({
     <Link href={`${ROUTE_BLOGS}/${article.slug.join("/")}`}>
       <div
         className={classNames(
-          "flex items-stretch gap-2 overflow-hidden",
+          "flex flex-col md:flex-row items-stretch gap-2 overflow-hidden",
           className
         )}
       >
         <div
           className={classNames(
-            "aspect-square max-w-1/3 flex-shrink-0 h-full overflow-hidden",
+            "h-48 md:h-full md:aspect-square md:max-w-1/3 flex-shrink-0 overflow-hidden",
             imageClassName
           )}
         >
@@ -41,7 +41,7 @@ export const BlogPostPreviewCard = ({
             />
           </div>
         </div>
-        <div className="p-2 flex flex-col overflow-hidden">
+        <div className="p-2 flex flex-col overflow-hidden flex-shrink-0">
           <BlogCategory category={article.category} />
           <span className="font-bold text-lg md:text-xl">{article.title}</span>
           {withDate && (

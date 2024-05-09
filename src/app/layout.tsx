@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Montserrat } from "next/font/google";
 import { Footer } from "./blogs/components/footer";
-import PublicArticleHeader from "./blogs/components/public-article-header";
+import { Header } from "./blogs/components/header";
 import { SkipLink } from "./components/skip-link";
 import "./globals.css";
 
@@ -25,7 +25,7 @@ export default function RootLayout({
           "min-h-screen flex flex-col items-stretch"
         )}
       >
-        <PublicArticleHeader />
+        <Header />
         <SkipLink />
         <div className="flex-1">{children}</div>
         <Footer />

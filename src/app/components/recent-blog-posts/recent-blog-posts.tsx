@@ -17,7 +17,7 @@ export const RecentBlogPosts = async () => {
             <BlogPostPreviewCard
               key={article.title}
               article={article}
-              className="h-48 rounded-lg"
+              className="md:h-48 rounded-lg"
             />
           ))}
         </div>

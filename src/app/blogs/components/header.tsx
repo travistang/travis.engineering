@@ -5,19 +5,20 @@ import ThemeToggle from "@/app/components/theme-toggle";
 import classNames from "classnames";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
+import { ReadingProgressBar } from "../[...slug]/components/reading-progress-bar";
 import { HeaderItems } from "./header-items";
 import HeaderMenu from "./header-menu";
 
-export default function PublicArticleHeader() {
+export const Header = () => {
   const [menuOpened, setMenuOpened] = useState(false);
   return (
     <>
       <header
         className={classNames(
-          "relative flex justify-between items-center p-4 bg-white dark:bg-slate z-50",
-          "after:absolute after:inset-0 after:-z-10 after:bg-white after:dark:bg-slate"
+          "sticky top-0 flex justify-between items-center p-4 bg-white dark:bg-slate z-50"
         )}
       >
+        <ReadingProgressBar />
         <Brand />
         <div className="hidden md:flex items-center gap-8">
           <nav>
@@ -41,4 +42,4 @@ export default function PublicArticleHeader() {
       </header>
     </>
   );
-}
+};

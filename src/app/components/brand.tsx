@@ -6,7 +6,10 @@ type Props = {
 };
 export default function Brand({ copyRight }: Props) {
   return (
-    <Link href="/" className="flex items-center gap-2 flex-nowrap">
+    <Link
+      href="/"
+      className="flex items-center gap-2 flex-nowrap bg-white dark:bg-slate"
+    >
       <div className="h-12 w-12 md:h-16 md:w-16 aspect-square overflow-hidden">
         <SiteLogo className="w-full h-full" />
       </div>

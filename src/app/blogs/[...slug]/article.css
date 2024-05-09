@@ -6,9 +6,17 @@ code:not([class]) {
   @apply rounded-sm bg-primary-lighter/50 dark:bg-primary-light/50 text-slate dark:text-white px-2;
 }
 
-code > span {
+code span {
   background: unset;
   color: unset;
+}
+
+ol {
+  @apply list-outside;
+}
+
+ol li {
+  @apply list-decimal;
 }
 
 h1 {

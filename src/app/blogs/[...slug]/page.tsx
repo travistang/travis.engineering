@@ -1,15 +1,17 @@
 import { getArticle, listArticles } from "@/services/articles";
 
 import { Metadata } from "next";
-import Image from "next/image";
-
 import { MDXRemote } from "next-mdx-remote/rsc";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import path from "path";
+
 import "./article.css";
 import code from "./components/article-code-block";
 import { ArticleHeader } from "./components/article-header";
 import { BlogImageContent } from "./components/blog-image-content";
+import { CodeWithFileName } from "./components/code-with-filename";
+import MathEquation from "./components/math-equation";
 
 export async function generateStaticParams() {
   const articles = await listArticles();
@@ -57,25 +59,29 @@ export default async function ArticleViewPage({ params: { slug } }: Props) {
   }
 
   return (
-    <article className="flex flex-col p-4 items-center gap-8 md:gap-16">
-      <ArticleHeader article={articleContent} />
-      <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
-        <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
-      </section>
-      <main id="main-content" className="w-full md:w-2/3 gap-2">
-        <MDXRemote
-          source={articleContent.content}
-          components={{
-            code,
-            BlogImageContent: (props) => (
-              <BlogImageContent
-                {...props}
-                rootPath={path.join("/blogs", ...slug)}
-              />
-            ),
-          }}
-        />
-      </main>
-    </article>
+    <>
+      <article className="flex flex-col p-4 items-center gap-8 md:gap-16">
+        <ArticleHeader article={articleContent} />
+        <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
+          <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
+        </section>
+        <main id="main-content" className="w-full md:w-2/3 gap-2">
+          <MDXRemote
+            source={articleContent.content}
+            components={{
+              code,
+              CodeWithFileName,
+              MathEquation,
+              BlogImageContent: (props) => (
+                <BlogImageContent
+                  {...props}
+                  rootPath={path.join("/blogs", ...slug)}
+                />
+              ),
+            }}
+          />
+        </main>
+      </article>
+    </>
   );
 }
