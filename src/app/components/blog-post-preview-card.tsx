@@ -6,14 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { BlogCategory } from "./blog-category";
 
+type PreviewVariant = "card" | "row";
 type Props = {
-  withDate?: boolean;
+  variant?: PreviewVariant;
   className?: string;
   imageClassName?: string;
   article: ArticleDetails;
 };
 export const BlogPostPreviewCard = ({
-  withDate,
+  variant = "card",
   imageClassName,
   className,
   article,
@@ -22,13 +23,17 @@ export const BlogPostPreviewCard = ({
     <Link href={`${ROUTE_BLOGS}/${article.slug.join("/")}`}>
       <div
         className={classNames(
-          "flex flex-col md:flex-row items-stretch gap-2 overflow-hidden",
+          "flex items-stretch gap-2 overflow-hidden",
+          variant === "row" ? "flex-row" : "flex-col",
           className
         )}
       >
         <div
           className={classNames(
-            "h-48 md:h-full md:aspect-square md:max-w-1/3 flex-shrink-0 overflow-hidden",
+            "overflow-hidden",
+            variant === "row"
+              ? "aspect-square h-full w-auto hidden md:block flex-shrink-0"
+              : "h-36 md:h-48 w-auto flex-shrink-0",
             imageClassName
           )}
         >
@@ -44,13 +49,15 @@ export const BlogPostPreviewCard = ({
         <div className="p-2 flex flex-col overflow-hidden flex-shrink-0">
           <BlogCategory category={article.category} />
           <span className="font-bold text-lg md:text-xl">{article.title}</span>
-          {withDate && (
+          {variant === "row" && (
             <h6 className="opacity-75 text-sm italic py-1">
               {format(new Date(article.createdAt), "yyyy-MM-dd")}
             </h6>
           )}
-          <p className="line-clamp-3">{article.summary}</p>
-          {!withDate && (
+          <p className="text-sm md:text-md line-clamp-2 md:line-clamp-3">
+            {article.summary}
+          </p>
+          {variant === "card" && (
             <span className="italic text-sm hover:underline justify-self-end">
               Read more...
             </span>

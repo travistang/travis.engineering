@@ -8,9 +8,9 @@ export default async function BlogListPage() {
       <h1>All blogs</h1>
       {blogs.map((blog) => (
         <BlogPostPreviewCard
-          withDate
+          variant="row"
           imageClassName="rounded-lg"
-          className="border-b-slate md:h-48"
+          className="border-b-slate  h-36"
           key={blog.slug.join("/")}
           article={blog}
         />

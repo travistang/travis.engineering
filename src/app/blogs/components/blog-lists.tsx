@@ -12,9 +12,9 @@ export const BlogLists = ({ children, blogs }: Props) => {
       {children}
       {blogs.map((blog) => (
         <BlogPostPreviewCard
-          withDate
+          variant="row"
           imageClassName="rounded-lg"
-          className="border-b-slate h-36 md:h-48"
+          className="border-b-slate"
           key={blog.slug.join("/")}
           article={blog}
         />

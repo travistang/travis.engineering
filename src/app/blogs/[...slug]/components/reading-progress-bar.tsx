@@ -12,6 +12,8 @@ export const ReadingProgressBar = () => {
     if (!inBlogPost) {
       return;
     }
+    const progressBarRef = progressBar.current;
+    const progressBarContainerRef = progressBarContainer.current;
     const scrollListener = () => {
       if (!progressBar.current || !progressBarContainer.current) return;
       const pageHeight = document.documentElement.scrollHeight;
@@ -23,7 +25,13 @@ export const ReadingProgressBar = () => {
       progressBar.current.style.width = `${ratio * 100}%`;
     };
     document.addEventListener("scroll", scrollListener);
-    return () => document.removeEventListener("scroll", scrollListener);
+    return () => {
+      if (progressBarRef && progressBarContainerRef) {
+        progressBarContainerRef.style.backgroundColor = "transparent";
+        progressBarRef.style.width = "0%";
+      }
+      document.removeEventListener("scroll", scrollListener);
+    };
   }, [inBlogPost]);
 
   return (
@@ -35,9 +43,8 @@ export const ReadingProgressBar = () => {
       )}
     >
       <div
-        role="progressbar"
         ref={progressBar}
-        className="z-10 absolute top-0 left-0 h-full bg-primary "
+        className="z-10 absolute top-0 left-0 h-full bg-primary"
       />
     </div>
   );
