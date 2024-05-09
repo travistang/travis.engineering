@@ -10,7 +10,7 @@ export default async function BlogListPage() {
         <BlogPostPreviewCard
           variant="row"
           imageClassName="rounded-lg"
-          className="border-b-slate  h-36"
+          className="border-b-slate"
           key={blog.slug.join("/")}
           article={blog}
         />

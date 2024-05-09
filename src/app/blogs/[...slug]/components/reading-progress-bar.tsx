@@ -7,7 +7,7 @@ export const ReadingProgressBar = () => {
   const progressBar = useRef<HTMLDivElement>(null);
   const progressBarContainer = useRef<HTMLDivElement>(null);
   const pathName = usePathname();
-  const inBlogPost = /^\/blogs\/.+$/.test(pathName);
+  const inBlogPost = /^\/blogs\/(?!category|tags).+$/.test(pathName);
   useEffect(() => {
     if (!inBlogPost) {
       return;

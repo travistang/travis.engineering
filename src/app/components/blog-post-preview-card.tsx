@@ -24,7 +24,7 @@ export const BlogPostPreviewCard = ({
       <div
         className={classNames(
           "flex items-stretch gap-2 overflow-hidden",
-          variant === "row" ? "flex-row" : "flex-col",
+          variant === "row" ? "flex-row h-36" : "flex-col",
           className
         )}
       >
