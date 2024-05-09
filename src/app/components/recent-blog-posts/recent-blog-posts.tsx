@@ -17,7 +17,7 @@ export const RecentBlogPosts = async () => {
             <BlogPostPreviewCard
               key={article.title}
               article={article}
-              className="h-72 md:h-full md:max-h-96 rounded-lg hover:scale-105 transition-transform duration-300"
+              className="h-72 md:h-full md:max-h-96 rounded-lg md:hover:scale-105 md:transition-transform md:duration-300"
             />
           ))}
         </div>

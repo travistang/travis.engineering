@@ -3,6 +3,24 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import colors from "tailwindcss/colors";
 
+const calculateReadingProgress = () => {
+  const pageHeight = document.documentElement.scrollHeight;
+  const viewportHeight = document.documentElement.clientHeight;
+  const currentScrollPosition = document.documentElement.scrollTop;
+  return currentScrollPosition / (pageHeight - viewportHeight);
+};
+
+const setProgressBar = (
+  progressBar: HTMLDivElement | null,
+  progressBarContainer: HTMLDivElement | null,
+  ratio: number
+) => {
+  if (!progressBar || !progressBarContainer) return;
+  progressBarContainer.style.backgroundColor =
+    ratio < 0.01 ? "transparent" : `${colors.slate[500]}30`;
+  progressBar.style.width = `${ratio * 100}%`;
+};
+
 export const ReadingProgressBar = () => {
   const progressBar = useRef<HTMLDivElement>(null);
   const progressBarContainer = useRef<HTMLDivElement>(null);
@@ -15,21 +33,14 @@ export const ReadingProgressBar = () => {
     const progressBarRef = progressBar.current;
     const progressBarContainerRef = progressBarContainer.current;
     const scrollListener = () => {
-      if (!progressBar.current || !progressBarContainer.current) return;
-      const pageHeight = document.documentElement.scrollHeight;
-      const viewportHeight = document.documentElement.clientHeight;
-      const currentScrollPosition = document.documentElement.scrollTop;
-      const ratio = currentScrollPosition / (pageHeight - viewportHeight);
-      progressBarContainer.current.style.backgroundColor =
-        ratio < 0.01 ? "transparent" : `${colors.slate[500]}30`;
-      progressBar.current.style.width = `${ratio * 100}%`;
+      const ratio = calculateReadingProgress();
+      setProgressBar(progressBar.current, progressBarContainer.current, ratio);
     };
+
     document.addEventListener("scroll", scrollListener);
+
     return () => {
-      if (progressBarRef && progressBarContainerRef) {
-        progressBarContainerRef.style.backgroundColor = "transparent";
-        progressBarRef.style.width = "0%";
-      }
+      setProgressBar(progressBarRef, progressBarContainerRef, 0);
       document.removeEventListener("scroll", scrollListener);
     };
   }, [inBlogPost]);

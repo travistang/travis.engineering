@@ -24,7 +24,7 @@ export const BlogPostPreviewCard = ({
       <div
         className={classNames(
           "flex items-stretch gap-2 overflow-hidden",
-          variant === "row" ? "flex-row h-36" : "flex-col",
+          variant === "row" ? "w-full flex-row h-36" : "flex-col",
           className
         )}
       >
@@ -46,7 +46,7 @@ export const BlogPostPreviewCard = ({
             />
           </div>
         </div>
-        <div className="p-2 flex flex-col overflow-hidden flex-shrink-0">
+        <div className="p-2 flex flex-col overflow-hidden flex-shrink-0 max-w-full">
           <BlogCategory category={article.category} />
           <span className="font-bold text-lg md:text-xl">{article.title}</span>
           {variant === "row" && (
