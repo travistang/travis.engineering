@@ -1,8 +1,10 @@
+import { Analytics } from "@vercel/analytics/react";
 import classNames from "classnames";
 import { Montserrat } from "next/font/google";
 import { Footer } from "./blogs/components/footer";
 import { Header } from "./blogs/components/header";
 import { SkipLink } from "./components/skip-link";
+
 import "./globals.css";
 
 export { metadata } from "@/services/seo";
@@ -27,6 +29,7 @@ export default function RootLayout({
       >
         <Header />
         <SkipLink />
+        <Analytics />
         <div className="flex-1">{children}</div>
         <Footer />
       </body>
