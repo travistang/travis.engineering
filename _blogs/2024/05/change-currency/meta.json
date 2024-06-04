@@ -1,0 +1,7 @@
+{
+  "title": "What if I don't just use Euro?",
+  "createdAt": "2024-05-09",
+  "tags": ["TypeScript", "System design"],
+  "category": "development",
+  "summary": "How I extend my expenditure app to support multiple currencies"
+}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   applicationName: rawMetadata.name,
   authors: { name: "Travis Tang", url: "https://travis.engineering" },
   keywords:
-    "Next.js, react, blog, fullstack, TypeScript, Developer, TailwindCSS, Node.js, Angular, Germany, UK, United Kingdom, Europe, Web Development, Software Development, Software Engineering, Software Developer, Software Engineer, Frontend, Backend, Full Stack, Fullstack, Web Developer, Web Engineer, Web Development, Web Design, Web Designer, ",
+    "travis tang, travis, travis engineering, travis engineer, travis full stack developer, travis.engineering, travis.engineer, Next.js, react, blog, fullstack, TypeScript, Developer, TailwindCSS, Node.js, Angular, Germany, UK, United Kingdom, Europe, Web Development, Software Development, Software Engineering, Software Developer, Software Engineer, Frontend, Backend, Full Stack, Fullstack, Web Developer, Web Engineer, Web Development, Web Design, Web Designer",
   description: rawMetadata.description,
   twitter: {
     card: "summary_large_image",

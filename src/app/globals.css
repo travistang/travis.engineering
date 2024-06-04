@@ -27,7 +27,7 @@ h1 {
 }
 
 a {
-  @apply text-primary md:hover:underline hover:text-primary-dark dark:hover:text-primary-light;
+  @apply text-primary md:hover:underline hover:text-primary-light dark:hover:text-primary;
 }
 
 h2 {

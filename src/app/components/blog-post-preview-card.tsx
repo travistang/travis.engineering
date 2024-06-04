@@ -39,8 +39,9 @@ export const BlogPostPreviewCard = ({
         >
           <div className="relative w-full h-full">
             <Image
-              objectFit="cover"
-              layout="fill"
+              height={240}
+              width={240}
+              className="absolute inset-0 w-full h-full object-cover"
               src={article.coverImageUrl}
               alt={article.title}
             />

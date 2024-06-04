@@ -1,0 +1,228 @@
+<PrerequisiteSection prerequisitesMarkdown={["TypeScript", "React.js"]} />
+## Background
+
+When I built my own [expenditure app](https://travis.engineering/projects/top-expenditure-app) all the expenditures recorded are in Euro (€) because that's the only currency I used at that time. This doesn't seem to be true anymore recently and I have to make adjustments to allow the app to keep records in multiple currencies.
+
+But doing this requires substantial changes and it is much more complicated than just adding a new `currency` field to the records and the UI components for choosing currency. There are several features and natures of the currencies that we have to consider before making the changes otherwise we could reduce its maintainability and capability to adapt with different features.
+
+## Current situation
+
+There are 4 major features in the current version of the app:
+
+1. Common expenditures logging
+2. Budgets for individual expenditure categories
+3. Regular expenditures and incomes
+4. Expenditure statistics
+
+The first feature is straightforward: Suppose you bought a drink for 3€, you go to the main page, write down the amount and assign this expenditure under "Food" category, then click the big green button to record the expenditure and the entry (I will refer it to `Expenditure` below) will be stored locally in your browser (with IndexDB).
+
+The second feature is to allow users to create arbitrary categories that expenditures can be assigned to. Each expenditure **must** have a category. Each category _may_ have an associated budget set by the user and it resets every month.
+
+The third feature allows the users to add any recurrent expenditures / incomes (e.g. phone bills, salary) into the database. These records are referred to as _Regular expenditures / incomes_
+
+The final feature aggregates common expenditures and regular expenditures / incomes to create a statistic view for the users to have an impression of where the money has gone. This could be total expenditures per month, expenditures percentage by categories and so on.
+
+A fraction of the TypeScript Type definition (which would also saved as-is in the database) would be like this:
+
+```typescript
+export type Expenditure = {
+  name: string;
+  date: number;
+  tags: string[];
+  category: string;
+  amount: number;
+  repeat?: Repeat;
+};
+
+export type RegularExpenditure = Expenditure & {
+  repeat: Repeat;
+};
+
+export type Budget = {
+  amount: number;
+  effectiveSince: number;
+};
+
+export type Category = {
+  name: string;
+  id: string;
+  color?: string;
+  icon?: string;
+  budget?: Budget;
+};
+```
+
+With these types the statistics features could be derived by something like
+
+```typescript
+function total(
+  expenditures: Expenditure[],
+  regularExpenditures: RegularExpenditure[]
+): number;
+
+// the "string" in Record<string, Expenditure[]> would be the id of the category
+function expendituresByCategories(
+  expenditures: Expenditure[]
+): Record<string, Expenditure[]>;
+
+// ...
+```
+
+## Adapting the data types
+
+I would say the first thing we do is to adjust the data types to support the idea of `Currency`. When I say the data types _support_ currency features I mean the types are _sufficient to include the currency information and allow it to be queried / manipulated without significant challenges_. Let's start with a small step to actually define `Currency`:
+
+```diff
++ type Currency = "EUR" | "GBP" | "HKD";
+```
+
+Since it's mostly for my personal use I will choose to include the 3 most commonly used currencies. But the changes should allow arbitrary currencies to be added with minimal changes.
+
+The `Expenditure` type would then naturally have to contain `Currency`:
+
+```diff
+export type Expenditure = {
+  name: string;
+  date: number;
+  tags: string[];
+  category: string;
+  amount: number;
+  repeat?: Repeat;
++ currency: Currency;
+};
+```
+
+The changes to `Category` would be a bit tricky. When multiple currencies are at play, what would a _budget_ of a category mean in this case? Do we assume that its in Euro? If yes, which exchange rates do we use to convert the expenditures that are not in Euro then? In my opinion, we can still "postpone" this problem by allowing categories to have budgets for each of the supported currencies:
+
+```diff
++ type ByCurrency<T> = Partial<Record<Currency, T>>;
+
+export type Category = {
+  name: string;
+  id: string;
+  color?: string;
+  icon?: string;
+-  budget?: Budget;
++  budget: ByCurrency<Currency, Budget>;
+};
+```
+
+This way the budget usages can be counted separately by currencies, avoiding the problems with conversion rate.
+
+The final feature, expenditure statistics, is the hardest to adjust. Because by its nature expenditures need to be aggregated (sum, average etc.) and to aggregate records with different currencies we need _exchange rate_. It would, however, be very hard to include this info because exchange rates always fluctuate and could only be acquired through external API calls from within the app. Since currently the app is just a SPA hosted on GitHub pages, making those API calls would bring up other issues like API token management and cross-origin resource sharing (CORS). I could certainly host another server to proxy those API requests or caching the (almost) latest exchange rate to tackle this problem, but all of these seem to be an overkill for the sake of aggregating expenditures of different currencies locally. So how about we postpone the problem once more, and aggregate them by currency?
+
+```diff
+function total(
+  expenditures: Expenditure[],
+  regularExpenditures: RegularExpenditure[]
+- ): number;
++ ): ByCurrency<number>;
+
+/*
+  note: return type could be Record<string, ByCurrency<Expenditure[]>>
+  as well, which in turns mean we group expenditures first by the category
+  then by its currency. It depends on which is more convenient for the UI
+  to display this data.
+*/
+function expendituresByCategories(
+  expenditures: Expenditure[]
+- ): Record<string, Expenditure[]>;
++ ): ByCurrency<Record<string, Expenditure[]>>;
+
+```
+
+## Adjusting the backend
+
+With the types defined, we can now focus on adjusting the "Backend" of the app. As the app is a standalone React app that can work offline, the "backend" here basically just means the code that is responsible for handling the CRUD operations on IndexDB, which is within the browser of the clients' device. Since I chose [Dexie](https://dexie.org) as the adapter for IndexDB, this piece of code is actually an instance of a JavaScript class that extends `Dexie` base class. In the app it's called `ExpenditureDatabase`. According to Dexie's docs, let's first update the schema:
+
+```diff
+class ExpenditureDatabase extends Dexie {
+  expenditures!: Table<ExpenditureWithId>;
+
+  // ...
+
+  constructor() {
+    super("expenditure-app");
+    this.version(1).stores({
+      expenditures: "++id,name,date,category,amount,*tags",
+      categories: "++id,name",
+    });
+    this.version(2).stores({
+      incomes: "++id,name",
+      expenditures: "++id,name,date,category,amount,*tags",
+      categories: "++id,name",
+    });
++    this.version(3).stores({
++      incomes: "++id,name",
++      expenditures: "++id,name,date,category,amount,currency,*tags",
++      categories: "++id,name",
++    });
+  }
+  // ...
+}
+```
+
+Also don't forget about the **migration** of the data since the existing data in database wouldn't be adjusted automatically just that a new schema version is defined. To do this in Dexie we add the following...
+
+```diff
+  this.version(3).stores({
+      incomes: "++id,name",
+      expenditures: "++id,name,date,category,amount,currency,*tags",
+      categories: "++id,name",
++ }).upgrade((tx) => {
++   tx.table("expenditures")
++   .toCollection()
++   .modify((exp) => {
++     if (!exp.currency) {
++       exp.currency = "EUR";
++     }
++   });
+
++   tx.table("categories")
++     .toCollection()
++     .modify((cat) => {
++       const hasOldBudgetSchema = cat.budget && "amount" in cat.budget;
++       if (hasOldBudgetSchema) {
++         cat.budget = {
++           EUR: cat.budget,
++         };
++       }
++     });
+
++   tx.table("incomes")
++     .toCollection()
++     .modify((income) => {
++       if (!income.currency) {
++         income.currency = "EUR";
++       }
++     });
++ })
+```
+
+This is to apply changes like
+
+```diff
+// example of migrating a category's budget
+{
+  "color": "...",
+  "icon": "...",
+  "id": "...",
+  "name": "..."
+- "budget": {
+-   "amount": 200,
+-   "effectiveSince": ...
+- }
++ "budget": {
++   EUR: {
++     "amount": 200,
++     "effectiveSince": ...
++   }
++ }
+}
+```
+
+And the same is to be done for all `expenditures`, `categories` and `incomes` collections.
+
+## Takeaway
+
+This post documents my way of adopting new features into an existing app. Of course the approach changes depending on the circumstances, but the idea remains the same: _first adapt the type, then the backend, then the UI components_. (I decided to left out the adjustments to frontend because it really is too tedious to write it down that it would be better for me to write it in another article in a better occasion.) Don't forget to test the features to make sure they're still working as expected!

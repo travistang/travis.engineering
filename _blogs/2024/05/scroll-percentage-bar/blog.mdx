@@ -21,8 +21,6 @@ Let's try to approach the first problem. Intuitively the progress bar should hav
 - `clientTop`
 - `clientHeight`
 
-<br />
-
 I know it's very hard to figure out what they actually are by simply looking
 at their names and at some point I'm convinced that their names are made by picking
 any 2 out of those 4 words and piece them together. While for sure there are documentations
@@ -30,11 +28,7 @@ like [MDN](https://developer.mozilla.org/en-US/) which explains each of them in
 depth, I sometimes find it even harder to comprehend those explanations than finding
 out their meaning empirically:
 
-<br />
-
 First lets pick a page that can be scrolled for experimenting. For this I choose one of the [blog posts I wrote](https://www.travis.engineering/blogs/2024/05/return-never-never-return). Then we simply log the value of these 4 variables at different scrolling point to observe their behaviour.
-
-<br />
 
 At the **top** of the page, their values are:
 
@@ -74,8 +68,6 @@ But maybe it's just coincidence, that's keep the scrolling position of the docum
 
 Only `clientHeight`'s value being reduced when the browser's height is reduced, which confirms the assumption.
 
-<br />
-
 As a result, we know that at the top of the page, `scrollTop` should be 0; When we are at the bottom of the page, `scrollTop` should be `scrollHeight - clientHeight`:
 
 ![When the screen is at the bottom of the page, scrollTop = scrollHeight - clientHeight](/blogs/2024/05/scroll-percentage-bar/illustration-2.png)
@@ -91,11 +83,7 @@ As a result, the "percentage" of paragraph read can be defined as:
 
 After figuring out how to calculate the progress of the reading, we now can turn to create the progress bar component.
 
-<br />
-
 I imagine the progress bar will stick right below the header and it will be "hidden" by the dropdown menu when the menu is opened so the new component should be placed within the header component:
-
-<br />
 
 <CodeWithFileName
   showLineNumbers
@@ -121,11 +109,8 @@ I imagine the progress bar will stick right below the header and it will be "hid
 `}
 </CodeWithFileName>
 
-<br />
-
 Then unleash our creativity and fill in the `<ReadingProgressBar />`, assuming the progress is 50% so we see how the bar would look like in the filled part as well as the remaining part:
 
-<br />
 <CodeWithFileName
   language="tsx"
   fileName="@/app/blogs/[...slug]/components/reading-progress-bar.tsx"
@@ -135,11 +120,7 @@ Then unleash our creativity and fill in the `<ReadingProgressBar />`, assuming t
   }`}
 </CodeWithFileName>
 
-<br />
-
 Now add an event listener to listen to scroll event. Calculate the "progress" and `console.log` it whenever a scroll happens:
-
-<br />
 
 <CodeWithFileName
   showLineNumbers
@@ -168,8 +149,6 @@ Now add an event listener to listen to scroll event. Calculate the "progress" an
 
 Once we know it's working when the `ratio` logged makes sense (which should be between 0 and 1, and increases when the page is scrolled towards the bottom), we change the width of the progress bar according to the ratio:
 
-<br />
-
 <CodeWithFileName
   showLineNumbers
   addedLines={[2, 5, 10, 15]}
@@ -195,16 +174,11 @@ Once we know it's working when the `ratio` logged makes sense (which should be b
 `}
 </CodeWithFileName>
 
-<br />
-
 So far so good, but I want like to add a little bit of (almost transparent) tint to the entire progress bar so to give the readers an idea of where the progress bar is going to go. Additionally it when the users haven't started reading (i.e. progress is almost 0) yet the entire proress bar and the tint should be invisible. Only when the users actually started reading will the tint fades in and the progress bar starts to move:
 
-<br />
 To do this, let's wrap the "moveable" progress bar into a container, which always
 spans across the width of the screen but remains invisible when the progress (ratio)
 is almost 0. Once the ratio starts to be significant (say 0.01) will the tint appears:
-
-<br />
 
 <CodeWithFileName
   showLineNumbers

@@ -46,6 +46,7 @@ export const CodeWithFileName = ({
       </span>
       <SyntaxHighlighter
         wrapLines
+        wrapLongLines
         style={theme}
         customStyle={{ margin: 0, borderRadius: 0 }}
         language={language}

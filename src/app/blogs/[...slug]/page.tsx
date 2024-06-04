@@ -9,9 +9,11 @@ import path from "path";
 import "./article.css";
 import code from "./components/article-code-block";
 import { ArticleHeader } from "./components/article-header";
+import { ArticleImage } from "./components/article-image";
 import { BlogImageContent } from "./components/blog-image-content";
 import { CodeWithFileName } from "./components/code-with-filename";
 import MathEquation from "./components/math-equation";
+import { PrerequisiteSection } from "./components/prerequisite-section";
 
 export async function generateStaticParams() {
   const articles = await listArticles();
@@ -65,13 +67,15 @@ export default async function ArticleViewPage({ params: { slug } }: Props) {
         <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
           <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
         </section>
-        <main id="main-content" className="w-full md:w-2/3 gap-2">
+        <main id="main-content" className="w-full md:w-2/3 flex flex-col gap-8">
           <MDXRemote
             source={articleContent.content}
             components={{
               code,
               CodeWithFileName,
               MathEquation,
+              PrerequisiteSection,
+              ArticleImage,
               BlogImageContent: (props) => (
                 <BlogImageContent
                   {...props}
