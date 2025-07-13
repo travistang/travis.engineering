@@ -15,14 +15,14 @@ export const Header = () => {
     <>
       <header
         className={classNames(
-          "sticky top-0 flex justify-between items-center p-4 bg-white dark:bg-slate z-50"
+          "sticky top-0 flex justify-between items-center p-4 bg-white dark:bg-slate-darker z-50"
         )}
       >
         <ReadingProgressBar />
         <Brand />
         <div className="hidden md:flex items-center gap-8">
           <nav>
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-8 list-none">
               <HeaderItems />
               <ThemeToggle />
             </ul>

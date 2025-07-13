@@ -5,7 +5,7 @@ const TargetAudienceSection: React.FC = () => {
   return (
     <AboutSection
       anchor="target-audience"
-      title="Who is supposed to read these?"
+      title="Who are your target audiences?"
       className="pt-16"
     >
       <p>

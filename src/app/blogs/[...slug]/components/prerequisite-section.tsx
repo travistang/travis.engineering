@@ -2,7 +2,7 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import Markdown from "react-markdown";
 
 type Props = {
-  prerequisitesMarkdown: string[];
+  prerequisitesMarkdown: string;
 };
 export const PrerequisiteSection = ({ prerequisitesMarkdown }: Props) => {
   return (
@@ -12,13 +12,7 @@ export const PrerequisiteSection = ({ prerequisitesMarkdown }: Props) => {
         Prerequisites
       </span>
       <p>I assume you know the following before reading this article:</p>
-      <ul className="list-disc list-inside">
-        {prerequisitesMarkdown.map((markdown) => (
-          <li key={markdown}>
-            <Markdown>{markdown}</Markdown>
-          </li>
-        ))}
-      </ul>
+      <Markdown>{prerequisitesMarkdown}</Markdown>
     </section>
   );
 };

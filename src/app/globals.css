@@ -4,7 +4,7 @@
 
 div,
 span {
-  @apply text-slate bg-white dark:text-white dark:bg-slate;
+  @apply text-slate dark:text-white;
 }
 
 .icon-changable-path {
@@ -46,14 +46,21 @@ a {
   @apply hover:no-underline;
 }
 
-nav a {
-  @apply text-slate dark:text-white  px-4 hover:text-primary dark:hover:text-primary-light;
-}
-
 .reading-progress {
   width: calc(100% * var(--page-completion-ratio));
 }
 
 code span {
   background-color: transparent;
+}
+
+.content {
+  @apply bg-white dark:bg-slate-darker;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+html {
+  scrollbar-color: auto transparent;
 }

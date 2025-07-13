@@ -4,8 +4,8 @@ import { TOPProjectPreview } from "./_components/top-project-preview/top-project
 
 export default async function ProjectListPage() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 auto-rows-min">
-      <h1 className="col-span-full ">Project list</h1>
+    <div className="grid grid-cols-1 gap-4 p-4 auto-rows-min bg-white dark:bg-slate-darker">
+      <h1 className="col-span-full">Project list</h1>
       <h6 className="col-span-full mb-4 md:mb-8">
         Here you can find a list of notable projects I have worked on. I hope
         you will find some of them interesting!

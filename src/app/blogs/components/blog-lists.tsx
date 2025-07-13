@@ -12,8 +12,6 @@ export const BlogLists = ({ children, blogs }: Props) => {
       {children}
       {blogs.map((blog) => (
         <BlogPostPreviewCard
-          variant="row"
-          imageClassName="rounded-lg"
           className="border-b-slate"
           key={blog.slug.join("/")}
           article={blog}

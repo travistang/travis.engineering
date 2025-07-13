@@ -16,17 +16,19 @@ export const HeaderItem = ({
   text,
 }: Props) => {
   return (
-    <Link
-      onClick={onClick}
-      tabIndex={tabIndex}
-      href={href}
-      className={classNames(
-        "w-full md:w-auto",
-        "p-2 md:p-0 border-b border-b-slate/50 dark:border-b-white-dark/50 md:border-none hover:text-primary cursor-pointer uppercase md:capitalize",
-        className
-      )}
-    >
-      {text}
-    </Link>
+    <li>
+      <Link
+        onClick={onClick}
+        tabIndex={tabIndex}
+        href={href}
+        className={classNames(
+          "w-full md:w-auto",
+          "p-2 md:p-0 hover:text-primary cursor-pointer uppercase md:capitalize text-slate dark:text-white decoration-none",
+          className
+        )}
+      >
+        {text}
+      </Link>
+    </li>
   );
 };

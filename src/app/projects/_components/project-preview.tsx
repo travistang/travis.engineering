@@ -14,13 +14,11 @@ export const ProjectPreview = ({ className, project }: Props) => {
     <Link
       href={`${ROUTE_PROJECTS}/${project.id}`}
       className={classNames(
-        "rounded-lg flex flex-col items-stretch overflow-hidden",
-        "bg-white-darker dark:bg-slate-darker md:shadow-md",
-        "text-slate dark:text-white hover:text-slate dark:hover:text-white  hover:scale-105 transition-transform duration-300",
+        "flex flex-row gap-2 mt-2",
         className
       )}
     >
-      <div className="rounded-t-lg w-full relative h-48">
+      <div className="rounded-t-lg relative h-32 md:h-48 aspect-square">
         <Image
           src={project.imageUrl}
           alt={project.name}
@@ -28,7 +26,7 @@ export const ProjectPreview = ({ className, project }: Props) => {
           objectFit="cover"
         />
       </div>
-      <div className="p-4 flex flex-col flex-1 items-stretch gap-2 bg-white-dark dark:bg-slate-darker ">
+      <div className="p-4 flex flex-col flex-1 items-stretch gap-2 content">
         <h4 className="font-bold">{project.name}</h4>
         <StackList stacks={project.stacks} maxItems={3} />
         <h6 className="line-clamp-2 overflow-ellipsis">

@@ -12,7 +12,7 @@ export default function Home() {
     <div className="flex flex-col items-stretch min-h-screen">
       <section
         className={classNames(
-          "h-[50vh] md:h-[calc(80vh)]",
+          "h-[50vh] md:h-[calc(80vh)] bg-white dark:bg-slate-darker",
           "flex",
           "px-4 md:px-8",
           "items-center justify-center md:justify-start md:items-stretch"

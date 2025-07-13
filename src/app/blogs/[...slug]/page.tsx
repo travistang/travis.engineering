@@ -62,7 +62,7 @@ export default async function ArticleViewPage({ params: { slug } }: Props) {
 
   return (
     <>
-      <article className="flex flex-col p-4 items-center gap-8 md:gap-16">
+      <article className="content flex flex-col p-4 items-center gap-8 md:gap-16">
         <ArticleHeader article={articleContent} />
         <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
           <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
