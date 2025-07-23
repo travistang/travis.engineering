@@ -7,7 +7,7 @@ export const RecentBlogPosts = async () => {
   const articles = await listRecentArticles(2);
   return (
     <section className="bg-white-dark dark:bg-slate-dark">
-      <div className="shadow -translate-y-0 md:-translate-y-36 md:rounded-lg p-4 md:p-8 flex flex-col gap-8 bg-white-dark dark:bg-slate-dark md:mx-16">
+      <div className=" md:shadow -translate-y-0 md:-translate-y-36 md:rounded-lg p-4 md:p-8 flex flex-col gap-8 bg-white-dark dark:bg-slate-dark md:mx-16">
         <h4 className="text-slate-darker dark:text-slate-light">
           Recent Posts
         </h4>

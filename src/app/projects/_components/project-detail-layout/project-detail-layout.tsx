@@ -10,7 +10,7 @@ type Props = {
 };
 export const ProjectDetailLayout = ({ children, project }: Props) => {
   return (
-    <div className="flex flex-col items-stretch gap-4 p-4 bg-white dark:bg-slate-darker">
+    <div className="flex flex-col items-stretch gap-4 p-4 bg-white dark:bg-slate-darker min-h-[calc(100vh-10rem)]">
       <a
         href={ROUTE_PROJECTS}
         className="text-slate dark:text-white-darker flex items-center gap-2"

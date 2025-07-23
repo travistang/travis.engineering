@@ -64,9 +64,11 @@ export default async function ArticleViewPage({ params: { slug } }: Props) {
     <>
       <article className="content flex flex-col p-4 items-center gap-8 md:gap-16">
         <ArticleHeader article={articleContent} />
-        <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
-          <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
-        </section>
+        {articleContent.coverImageUrl && (
+          <section className="cover-photo-wrapper rounded-lg w-full md:w-2/3 self-center overflow-hidden object-cover">
+            <Image fill alt="cover photo" src={articleContent.coverImageUrl} />
+          </section>
+        )}
         <main id="main-content" className="w-full md:w-2/3 flex flex-col gap-8">
           <MDXRemote
             source={articleContent.content}

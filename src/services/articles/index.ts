@@ -18,7 +18,7 @@ export type ArticleMetadata = {
 export type ArticleDetails = ArticleMetadata & {
   content: string;
   slug: string[];
-  coverImageUrl: string;
+  coverImageUrl?: string;
   readingTimeText?: string;
 };
 
